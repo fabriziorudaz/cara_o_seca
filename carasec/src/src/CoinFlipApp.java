@@ -1,6 +1,5 @@
 package src;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,17 +12,33 @@ public class CoinFlipApp extends JFrame {
     private ImageIcon headsIcon;
     private ImageIcon tailsIcon;
     private Random random;
+    private JRadioButton caraButton;
+    private JRadioButton secaButton;
+    private ButtonGroup choiceGroup;
 
     public CoinFlipApp() {
         // Configurar la ventana
         setTitle("Cara o Seca - Coin Flip");
-        setSize(300, 400);
+        setSize(300, 450);  // Aumenté la altura para acomodar los nuevos elementos
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Cargar las imágenes (asegúrate de que estén en la carpeta del proyecto)
         headsIcon = new ImageIcon("src/moneda_cara.png");  // Ruta a la imagen de cara
         tailsIcon = new ImageIcon("src/moneda_cruz.png");  // Ruta a la imagen de seca
+
+        // Panel para la selección de cara o seca
+        JPanel choicePanel = new JPanel();
+        choicePanel.setLayout(new FlowLayout());
+        caraButton = new JRadioButton("Cara");
+        secaButton = new JRadioButton("Seca");
+        choiceGroup = new ButtonGroup();
+        choiceGroup.add(caraButton);
+        choiceGroup.add(secaButton);
+        choicePanel.add(new JLabel("Elige:"));
+        choicePanel.add(caraButton);
+        choicePanel.add(secaButton);
+        add(choicePanel, BorderLayout.NORTH);
 
         // Etiqueta para mostrar la imagen de la moneda
         coinLabel = new JLabel();
@@ -46,15 +61,37 @@ public class CoinFlipApp extends JFrame {
     }
 
     private void flipCoin() {
+        // Verificar si el usuario ha seleccionado una opción
+        if (!caraButton.isSelected() && !secaButton.isSelected()) {
+            JOptionPane.showMessageDialog(this, "Por favor, elige Cara o Seca antes de lanzar.");
+            return;
+        }
+
+        // Obtener la elección del usuario
+        boolean userChoseCara = caraButton.isSelected();
+
         // Generar un resultado aleatorio: 0 para cara, 1 para seca
         int result = random.nextInt(2);
-        if (result == 0) {
+        boolean isCara = (result == 0);
+
+        // Actualizar la imagen
+        if (isCara) {
             coinLabel.setIcon(headsIcon);
-            JOptionPane.showMessageDialog(this, "¡Cara!");
         } else {
             coinLabel.setIcon(tailsIcon);
-            JOptionPane.showMessageDialog(this, "¡Seca!");
         }
+
+        // Determinar si ganó o perdió
+        String resultText = isCara ? "Cara" : "Seca";
+        String verdict;
+        if ((userChoseCara && isCara) || (!userChoseCara && !isCara)) {
+            verdict = "¡Ganaste!";
+        } else {
+            verdict = "¡Perdiste!";
+        }
+
+        // Mostrar mensaje con resultado y veredicto
+        JOptionPane.showMessageDialog(this, "Resultado: " + resultText + "\n" + verdict);
     }
 
     public static void main(String[] args) {
